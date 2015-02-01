@@ -1,6 +1,8 @@
 var width = 960,
         height = 600;
 
+// calculation is meant to be carried by R[], array of configured customers
+// set in the memory, sum and other values are then compiled.
 var R = new Array();
 
 var svg = d3.select("#calculator").append("svg")
@@ -51,6 +53,7 @@ var char = main.append("g").attr("id", "mainImage");
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
 
 function load() {
+    //meant to load a pvp config from url.
     return 1;
 }
 
@@ -60,27 +63,25 @@ function reloadItems(customer) {
             .data(weaponsByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
-                console.log(d);
                 return d.Recipe;
-            });
+            })
+            //.style("list-style-image", "url(images/chars/icon/48_bard.png)")
+            ;
     protections.selectAll(".protections")
             .data(protectionsByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
-                console.log(d);
                 return d.Recipe;
             });
     supportives.selectAll(".supportives")
             .data(supportivesByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
-                console.log(d);
                 return d.Recipe;
             });
 }
 
 d3.json("json/data.json", function (data) {
-    console.log(data);
     var charCell = width / data.game.chars.length;
     var charRect = chars.selectAll(".chars")
             .data(data.game.chars)
@@ -99,7 +100,6 @@ d3.json("json/data.json", function (data) {
 
                 var map = new Array();
                 for (var j = 0; j < d.protections.length; j++) {
-                    console.log(d.protections[j]);
                     for (var k = 0; k < data.game.items.protections[d.protections[j]].length; k++)
                         map.push(data.game.items.protections[d.protections[j]][k]);
                 }
@@ -128,7 +128,7 @@ d3.json("json/data.json", function (data) {
                 else
                     return "rgb(120, 120,120)";
             });
-    console.log(weaponsByCustomer.get("channeler"));
+
     var charIcon = chars.append("g").selectAll(".chars")
             .data(data.game.chars)
             .enter().append("image")
