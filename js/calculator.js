@@ -9,6 +9,8 @@ var svg = d3.select("#calculator").append("svg")
         .attr("width", width)
         .attr("height", height);
 
+var tooltip = d3.select("#calculator").append("div").attr("class", "tooltip hidden");
+
 var chars = svg.append("g").attr("id", "chars");
 
 var items = svg.append("g").attr("id", "items");
@@ -59,7 +61,7 @@ function load() {
 
 function reloadItems(customer) {
     d3.select("#calculator").selectAll("li").remove();
-    weapons.selectAll(".weapons")
+    weapon = weapons.selectAll(".weapons")
             .data(weaponsByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
@@ -79,6 +81,19 @@ function reloadItems(customer) {
             .html(function (d) {
                 return d.Recipe;
             });
+    weapon
+            .on("mousemove", function (d) {
+        var mouse = d3.mouse(svg.node()).map(function(d) {
+            return parseInt(d);
+        });
+        tooltip.classed("hidden", false)
+                //Values are meant to be computed
+                .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
+                .html("<ul><li>" + d.Price + "</li><li>" + d.Worker + "</li><li>" + d["Craft Time"] + "</li></ul>");
+    })
+            .on("mouseout", function (){
+                tooltip.classed("hidden", true);
+    });
 }
 
 d3.json("json/data.json", function (data) {
