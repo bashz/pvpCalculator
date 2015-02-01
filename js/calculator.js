@@ -11,31 +11,10 @@ var chars = svg.append("g").attr("id", "chars");
 
 var items = svg.append("g").attr("id", "items");
 var attak, defence, extra;
-var weapons, protections, supportives;
-items.append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 300)
-        .attr("height", 184)
-        .attr("fill", "rgba(200, 200, 200, 0.2)")
-        .attr("stroke", "#000")
-        .attr("stroke-width", "2");
-items.append("rect")
-        .attr("x", 0)
-        .attr("y", 184)
-        .attr("width", 300)
-        .attr("height", 184)
-        .attr("fill", "rgba(200, 200, 200, 0.2)")
-        .attr("stroke", "#000")
-        .attr("stroke-width", "2");
-items.append("rect")
-        .attr("x", 0)
-        .attr("y", 368)
-        .attr("width", 300)
-        .attr("height", 184)
-        .attr("fill", "rgba(200, 200, 200, 0.2)")
-        .attr("stroke", "#000")
-        .attr("stroke-width", "2");
+
+var weapons = d3.select("#attack");
+var protections = d3.select("#defence");
+var supportives = d3.select("#extra");
 
 var result = svg.append("g").attr("id", "result");
 var results = new Array();
@@ -69,47 +48,35 @@ main.append("rect")
         .attr("stroke-width", "2");
 var char = main.append("g").attr("id", "mainImage");
 
-var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportiveByCustomer = d3.map();
+var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
 
 function load() {
     return 1;
 }
 
 function reloadItems(customer) {
-    items.selectAll("text").remove();
-    weapons = items.selectAll(".weapons")
+    d3.select("#calculator").selectAll("li").remove();
+    weapons.selectAll(".weapons")
             .data(weaponsByCustomer.get(customer))
-            .enter().append("text")
+            .enter().append("li")
             .html(function (d) {
                 console.log(d);
                 return d.Recipe;
-            })
-            .attr("y", function (d, i) {
-                return i * 22;
-            })
-            .attr("x", 0);
-    protections = items.selectAll(".protections")
+            });
+    protections.selectAll(".protections")
             .data(protectionsByCustomer.get(customer))
-            .enter().append("text")
+            .enter().append("li")
             .html(function (d) {
                 console.log(d);
                 return d.Recipe;
-            })
-            .attr("y", function (d, i) {
-                return 184 + i * 22;
-            })
-            .attr("x", 0);
-    supportives = items.selectAll(".supportives")
-            .data(supportiveByCustomer.get(customer))
-            .enter().append("text")
+            });
+    supportives.selectAll(".supportives")
+            .data(supportivesByCustomer.get(customer))
+            .enter().append("li")
             .html(function (d) {
                 console.log(d);
                 return d.Recipe;
-            })
-            .attr("y", function (d, i) {
-                return 368 + i * 22;
-            })
-            .attr("x", 0);
+            });
 }
 
 d3.json("json/data.json", function (data) {
@@ -126,24 +93,24 @@ d3.json("json/data.json", function (data) {
                 var map = new Array();
                 for (var j = 0; j < d.weapons.length; j++) {
                     for (var k = 0; k < data.game.items.weapons[d.weapons[j]].length; k++)
-                    map.push(data.game.items.weapons[d.weapons[j]][k]);
+                        map.push(data.game.items.weapons[d.weapons[j]][k]);
                 }
                 weaponsByCustomer.set(d.id, map);
-                
+
                 var map = new Array();
                 for (var j = 0; j < d.protections.length; j++) {
                     console.log(d.protections[j]);
                     for (var k = 0; k < data.game.items.protections[d.protections[j]].length; k++)
-                    map.push(data.game.items.protections[d.protections[j]][k]);
+                        map.push(data.game.items.protections[d.protections[j]][k]);
                 }
                 protectionsByCustomer.set(d.id, map);
-                
+
                 var map = new Array();
                 for (var j = 0; j < d.supportive.length; j++) {
                     for (var k = 0; k < data.game.items.supportive[d.supportive[j]].length; k++)
-                    map.push(data.game.items.supportive[d.supportive[j]][k]);
+                        map.push(data.game.items.supportive[d.supportive[j]][k]);
                 }
-                supportiveByCustomer.set(d.id, map);
+                supportivesByCustomer.set(d.id, map);
                 //this is what originaly the function is meant for
                 return i * charCell;
             })
