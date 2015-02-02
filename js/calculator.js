@@ -67,7 +67,9 @@ function reloadItems(customer) {
             .html(function (d) {
                 return d.Recipe;
             })
-            //.style("list-style-image", "url(images/chars/icon/48_bard.png)")
+            .style("list-style-image", function(d){
+                return "url(images/items/icon/" + d.image + ")";
+            })
             ;
     protections.selectAll(".protections")
             .data(protectionsByCustomer.get(customer))
@@ -89,7 +91,7 @@ function reloadItems(customer) {
         tooltip.classed("hidden", false)
                 //Values are meant to be computed
                 .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                .html("<ul><li>" + d.Price + "</li><li>" + d.Worker + "</li><li>" + d["Craft Time"] + "</li></ul>");
+                .html("<ul><li>" + d.Price + "</li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
     })
             .on("mouseout", function (){
                 tooltip.classed("hidden", true);

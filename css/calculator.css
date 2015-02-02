@@ -43,6 +43,7 @@ body{
     border: black solid 2px;
 }
 #attack{
+    border-top-left-radius: 10px;
     top: 0px;
     height: 184px;
 }
