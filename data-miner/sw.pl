@@ -30,9 +30,126 @@ if ($scraper->get('http://www.edgebee.com/wiki/index.php?title=Edgebee_Wiki:SP2_
         my $link = 'http://www.edgebee.com/'.$1;
         my $pic_src = undef;
         my $picture = clean_name(${$elements}[0]->{text}).'.png';
+        my $ressources = undef;
+        if(${$elements}[11]->{text}!~/\s?0\s?/){
+            $ressources = $ressources.'"Iron":'.remove_space(${$elements}[11]->{text});
+        }
+        if(${$elements}[12]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Wood":'.remove_space(${$elements}[12]->{text});
+        }
+        if(${$elements}[13]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Herbs":'.remove_space(${$elements}[13]->{text});
+        }
+        if(${$elements}[14]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Leather":'.remove_space(${$elements}[14]->{text});
+        }
+        if(${$elements}[15]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Fabric":'.remove_space(${$elements}[15]->{text});
+        }
+        if(${$elements}[16]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Powder":'.remove_space(${$elements}[16]->{text});
+        }
+        if(${$elements}[17]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Dyes":'.remove_space(${$elements}[17]->{text});
+        }
+        if(${$elements}[18]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Elfwood":'.remove_space(${$elements}[18]->{text});
+        }
+        if(${$elements}[19]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Glass":'.remove_space(${$elements}[19]->{text});
+        }
+        if(${$elements}[20]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Oil":'.remove_space(${$elements}[20]->{text});
+        }
+        if(${$elements}[21]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Ironwood":'.remove_space(${$elements}[21]->{text});
+        }
+        if(${$elements}[22]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Steel":'.remove_space(${$elements}[22]->{text});
+        }
+        if(${$elements}[23]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Crystals":'.remove_space(${$elements}[23]->{text});
+        }
+        if(${$elements}[24]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Mithril":'.remove_space(${$elements}[24]->{text});
+        }
+        if(${$elements}[25]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Gems":'.remove_space(${$elements}[25]->{text});
+        }
+        if(${$elements}[26]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Acid":'.remove_space(${$elements}[26]->{text});
+        }
+        if(${$elements}[27]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Tear":'.remove_space(${$elements}[27]->{text});
+        }
+        if(${$elements}[28]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Volcanic":'.remove_space(${$elements}[28]->{text});
+        }
+        if(${$elements}[29]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Shell":'.remove_space(${$elements}[29]->{text});
+        }
+        if(${$elements}[30]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Feather":'.remove_space(${$elements}[30]->{text});
+        }
+        if(${$elements}[31]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Ice":'.remove_space(${$elements}[31]->{text});
+        }
+        if(${$elements}[32]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Horn":'.remove_space(${$elements}[32]->{text});
+        }
+        if(${$elements}[33]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Moon":'.remove_space(${$elements}[33]->{text});
+        }
+        if(${$elements}[34]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Roaring":'.remove_space(${$elements}[34]->{text});
+        }
+        if(${$elements}[35]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Silk":'.remove_space(${$elements}[35]->{text});
+        }
+        if(${$elements}[36]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Shadow":'.remove_space(${$elements}[36]->{text});
+        }
+        if(${$elements}[37]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Dragon":'.remove_space(${$elements}[37]->{text});
+        }
+        if(${$elements}[38]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Sun":'.remove_space(${$elements}[38]->{text});
+        }
+        if(${$elements}[39]->{text}!~/\s?0\s?/){
+            if($ressources){$ressources = $ressources.',';}
+            $ressources = $ressources.'"Divine":'.remove_space(${$elements}[39]->{text});
+        }
+
         $line = ',{'.
             '"image":"'.$picture.'",'.
-            '"Recipie":"'.remove_space(${$elements}[0]->{text}).'",'.
+            '"Recipe":"'.remove_space(${$elements}[0]->{text}).'",'.
             '"Category":"'.remove_space(${$elements}[1]->{text}).'",'.
             '"Worker":"'.remove_space(${$elements}[2]->{text}).'",'.
             '"Price":'.remove_space(${$elements}[3]->{text}).','.
@@ -42,37 +159,9 @@ if ($scraper->get('http://www.edgebee.com/wiki/index.php?title=Edgebee_Wiki:SP2_
             '"MaxResource":"'.remove_space(${$elements}[7]->{text}).'",'.
             '"Rare":'.remove_space(${$elements}[8]->{text}, 1).','.
             '"Level":'.remove_space(${$elements}[9]->{text}).','.
-            '"Workstation":"'.remove_space(${$elements}[10]->{text}).'",'.
-            '"Iron":'.remove_space(${$elements}[11]->{text}).','.
-            '"Wood":'.remove_space(${$elements}[12]->{text}).','.
-            '"Herbs":'.remove_space(${$elements}[13]->{text}).','.
-            '"Leather":'.remove_space(${$elements}[14]->{text}).','.
-            '"Fabric":"'.remove_space(${$elements}[15]->{text}).'",'.
-            '"Powder":"'.remove_space(${$elements}[16]->{text}).'",'.
-            '"Dyes":"'.remove_space(${$elements}[17]->{text}).'",'.
-            '"Elfwood":"'.remove_space(${$elements}[18]->{text}).'",'.
-            '"Glass":"'.remove_space(${$elements}[19]->{text}).'",'.
-            '"Oil":"'.remove_space(${$elements}[20]->{text}).'",'.
-            '"Ironwood":"'.remove_space(${$elements}[21]->{text}).'",'.
-            '"Steel":"'.remove_space(${$elements}[22]->{text}).'",'.
-            '"Crystals":"'.remove_space(${$elements}[23]->{text}).'",'.
-            '"Mithril":"'.remove_space(${$elements}[24]->{text}).'",'.
-            '"Gems":"'.remove_space(${$elements}[25]->{text}).'",'.
-            '"Acid":"'.remove_space(${$elements}[26]->{text}).'",'.
-            '"Tear":"'.remove_space(${$elements}[27]->{text}).'",'.
-            '"Volcanic":"'.remove_space(${$elements}[28]->{text}).'",'.
-            '"Shell":"'.remove_space(${$elements}[29]->{text}).'",'.
-            '"Feather":"'.remove_space(${$elements}[30]->{text}).'",'.
-            '"Ice":"'.remove_space(${$elements}[31]->{text}).'",'.
-            '"Horn":"'.remove_space(${$elements}[32]->{text}).'",'.
-            '"Moon":"'.remove_space(${$elements}[33]->{text}).'",'.
-            '"Roaring":"'.remove_space(${$elements}[34]->{text}).'",'.
-            '"Silk":"'.remove_space(${$elements}[35]->{text}).'",'.
-            '"Shadow":"'.remove_space(${$elements}[36]->{text}).'",'.
-            '"Dragon":"'.remove_space(${$elements}[37]->{text}).'",'.
-            '"Sun":"'.remove_space(${$elements}[38]->{text}).'",'.
-            '"Divine":"'.remove_space(${$elements}[39]->{text}).
-                '"}';
+            '"Workstation":"'.remove_space(${$elements}[10]->{text}).
+            '","Ressources":['.$resources.']}';
+            
         if(remove_space(${$elements}[1]->{text}) eq 'Amulets'){
             $Amulets = $line. $Amulets;
         }elsif(remove_space(${$elements}[1]->{text}) eq 'Armor'){
@@ -142,15 +231,16 @@ if ($scraper->get('http://www.edgebee.com/wiki/index.php?title=Edgebee_Wiki:SP2_
         
 #print "$line\n$link\n$picture\n";
     }
-    print "$Swords\n\n$Daggers\n\n$Axes\n\n$Harmor\n\n$Gauntlets\n\n$Hhelmets\n\n$Hboots\n\n$Armor,
- $Boots\n\n$Gloves\n\n$Helmets\n\n$Clothes\n\n$Shoes\n\n$Bracers\n\n$Hats\n\n$Shields\n\n$Herbs,
- $Potions\n\n$Scrolls\n\n$Bows\n\n$Guns\n\n$Thrown\n\n$Music\n\n$Maces\n\n$Spears,
- $Staves\n\n$Amulets\n\n$Rings\n\n$none";
+    print "$Swords\n\n$Daggers\n\n$Axes\n\n$Harmor\n\n$Gauntlets\n\n$Hhelmets\n\n$Hboots\n\n$Armor\n\n
+ $Boots\n\n$Gloves\n\n$Helmets\n\n$Clothes\n\n$Shoes\n\n$Bracers\n\n$Hats\n\n$Shields\n\n$Herbs\n\n
+ $Potions\n\n$Scrolls\n\n$Bows\n\n$Guns\n\n$Thrown\n\n$Music\n\n$Maces\n\n$Spears\n\n
+ $Staves\n\n$Amulets\n\n$Rings\nERMAC\n$none";
 }
 sub clean_name{
     my $clean = shift @_;
     $clean =~ s/\s/-/g;
     $clean =~ s/\*//;
+    $clean =~ s/'/-/;
     return $clean;
 }
 sub remove_space{

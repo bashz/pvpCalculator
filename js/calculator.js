@@ -14,7 +14,6 @@ var tooltip = d3.select("#calculator").append("div").attr("class", "tooltip hidd
 var chars = svg.append("g").attr("id", "chars");
 
 var items = svg.append("g").attr("id", "items");
-var attak, defence, extra;
 
 var weapons = d3.select("#attack");
 var protections = d3.select("#defence");
@@ -43,7 +42,7 @@ var sum = result.append("rect")
 
 var main = svg.append("g").attr("id", "main");
 main.append("rect")
-        .attr("x", 520)
+        .attr("x", 380)
         .attr("y", 100)
         .attr("width", 160)
         .attr("height", 160)
@@ -51,6 +50,34 @@ main.append("rect")
         .attr("stroke", "#000")
         .attr("stroke-width", "2");
 var char = main.append("g").attr("id", "mainImage");
+var Slider = svg.append("g").attr("id", "slider");
+var attack = svg.append("g").attr("id", "attack");
+attack.append("rect")
+        .attr("x", 560)
+        .attr("y", 60)
+        .attr("width", 96)
+        .attr("height", 96)
+        .attr("fill", "rgba(200, 200, 200, 0.2)")
+        .attr("stroke", "#000")
+        .attr("stroke-width", "2");
+var defence = svg.append("g").attr("id", "defence");
+defence.append("rect")
+        .attr("x", 560)
+        .attr("y", 200)
+        .attr("width", 96)
+        .attr("height", 96)
+        .attr("fill", "rgba(200, 200, 200, 0.2)")
+        .attr("stroke", "#000")
+        .attr("stroke-width", "2");
+var extra = svg.append("g").attr("id", "extra");
+extra.append("rect")
+        .attr("x", 560)
+        .attr("y", 340)
+        .attr("width", 96)
+        .attr("height", 96)
+        .attr("fill", "rgba(200, 200, 200, 0.2)")
+        .attr("stroke", "#000")
+        .attr("stroke-width", "2");
 
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
 
@@ -67,17 +94,17 @@ function reloadItems(customer) {
             .html(function (d) {
                 return d.Recipe;
             })
-            .style("list-style-image", function(d){
+            .style("list-style-image", function (d) {
                 return "url(images/items/icon/" + d.image + ")";
             })
             ;
-    protections.selectAll(".protections")
+    protection = protections.selectAll(".protections")
             .data(protectionsByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
                 return d.Recipe;
             });
-    supportives.selectAll(".supportives")
+    supportive = supportives.selectAll(".supportives")
             .data(supportivesByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
@@ -85,17 +112,82 @@ function reloadItems(customer) {
             });
     weapon
             .on("mousemove", function (d) {
-        var mouse = d3.mouse(svg.node()).map(function(d) {
-            return parseInt(d);
-        });
-        tooltip.classed("hidden", false)
-                //Values are meant to be computed
-                .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                .html("<ul><li>" + d.Price + "</li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
-    })
-            .on("mouseout", function (){
+                var mouse = d3.mouse(svg.node()).map(function (d) {
+                    return parseInt(d);
+                });
+                tooltip.classed("hidden", false)
+                        //Values are meant to be computed
+                        .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
+                        .html("<ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+            })
+            .on("mouseout", function () {
                 tooltip.classed("hidden", true);
-    });
+            })
+            .on("click", function (d) {
+                attack.selectAll("image").remove();
+                var t = attack.append("image")
+                        .attr("x", 560)
+                        .attr("y", 60)
+                        .attr("width", 96)
+                        .attr("height", 96)
+                        .attr("cursor", "pointer")
+                        .attr("xlink:href", "images/items/icon/" + d.image);
+                t.on("click", function () {
+                    attack.selectAll("image").remove();
+                });
+            });
+    protection
+            .on("mousemove", function (d) {
+                var mouse = d3.mouse(svg.node()).map(function (d) {
+                    return parseInt(d);
+                });
+                tooltip.classed("hidden", false)
+                        //Values are meant to be computed
+                        .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
+                        .html("<ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+            })
+            .on("mouseout", function () {
+                tooltip.classed("hidden", true);
+            })
+            .on("click", function (d) {
+                defence.selectAll("image").remove();
+                var t = defence.append("image")
+                        .attr("x", 560)
+                        .attr("y", 200)
+                        .attr("width", 96)
+                        .attr("height", 96)
+                        .attr("cursor", "pointer")
+                        .attr("xlink:href", "images/items/icon/" + d.image);
+                t.on("click", function () {
+                    defence.selectAll("image").remove();
+                });
+            });
+    supportive
+            .on("mousemove", function (d) {
+                var mouse = d3.mouse(svg.node()).map(function (d) {
+                    return parseInt(d);
+                });
+                tooltip.classed("hidden", false)
+                        //Values are meant to be computed
+                        .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
+                        .html("<ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+            })
+            .on("mouseout", function () {
+                tooltip.classed("hidden", true);
+            })
+            .on("click", function (d) {
+                extra.selectAll("image").remove();
+                var t = extra.append("image")
+                        .attr("x", 560)
+                        .attr("y", 340)
+                        .attr("width", 96)
+                        .attr("height", 96)
+                        .attr("cursor", "pointer")
+                        .attr("xlink:href", "images/items/icon/" + d.image);
+                t.on("click", function () {
+                    extra.selectAll("image").remove();
+                });
+            });
 }
 
 d3.json("json/data.json", function (data) {
@@ -178,12 +270,84 @@ d3.json("json/data.json", function (data) {
             })
             .on("click", function (d) {
                 reloadItems(d.id);
+                attack.selectAll("image").remove();
+                defence.selectAll("image").remove();
+                extra.selectAll("image").remove();
                 char.selectAll("image").remove();
-                char.append("image")
-                        .attr("x", 520)
+                var t = char.append("image")
+                        .attr("x", 380)
                         .attr("y", 100)
                         .attr("width", 159)
                         .attr("height", 159)
+                        .attr("cursor", "pointer")
                         .attr("xlink:href", "images/chars/" + d.image);
+                drawSlider(1, 20);
+                t.on("click", function () {
+                    d3.select("#calculator").selectAll("li").remove();
+                    attack.selectAll("image").remove();
+                    defence.selectAll("image").remove();
+                    extra.selectAll("image").remove();
+                    char.selectAll("image").remove();
+                    Slider.select("g").remove();
+                });
             });
 });
+
+function drawSlider(min, max) {
+    var h = 50;
+    Slider.select("g").remove();
+    var svgSlider = Slider.attr("height", h)
+            .append("g")
+            .attr("transform", "translate(380,262) scale(0.8)");
+    var x = d3.scale.linear()
+            .domain([min, max])
+            .range([0, 200])
+            .clamp(true);
+    var brush = d3.svg.brush()
+            .x(x)
+            .extent([0, 0])
+            .on("brush", brushed);
+    svgSlider.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + h / 2 + ")")
+            .call(
+                    d3.svg.axis()
+                    .scale(x)
+                    .orient("bottom")
+                    
+                    .tickSize(0)
+                    .tickPadding(12)
+                    )
+            .select(".domain")
+            .select(function () {
+                return this.parentNode.appendChild(this.cloneNode(true));
+            })
+            .attr("class", "halo");
+    var slider = svgSlider.append("g")
+            .attr("class", "slider")
+            .call(brush);
+    slider.selectAll(".extent,.resize")
+            .remove();
+    slider.select(".background")
+            .attr("height", h);
+    var handle = slider.append("circle")
+            .attr("class", "handle")
+            .attr("transform", "translate(0," + h / 2 + ")")
+            .attr("r", 9);
+    function brushed() {
+        var value = brush.extent()[0];
+        if (d3.event.sourceEvent) { // not a programmatic event
+            value = x.invert(d3.mouse(this)[0]);
+            brush.extent([value, value]);
+        }
+        handle.attr("cx", x(value));
+        svg.selectAll("image").each(function () {
+            var opacity = 1 - .1 * Math.abs(value - d3.select(this).attr("date"));
+            if (opacity <= 0) {
+                d3.select(this).style("display", "none");
+            } else {
+                d3.select(this).style("opacity", opacity).style("display", "block")
+            }
+        });
+    }
+}
