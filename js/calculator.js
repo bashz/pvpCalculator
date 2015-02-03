@@ -51,6 +51,8 @@ main.append("rect")
         .attr("stroke-width", "2");
 var char = main.append("g").attr("id", "mainImage");
 var Slider = svg.append("g").attr("id", "slider");
+var level = main.append("g");
+
 var attack = svg.append("g").attr("id", "attack");
 attack.append("rect")
         .attr("x", 560)
@@ -289,6 +291,7 @@ d3.json("json/data.json", function (data) {
                     extra.selectAll("image").remove();
                     char.selectAll("image").remove();
                     Slider.select("g").remove();
+                    level.selectAll("text").remove();
                 });
             });
 });
@@ -301,7 +304,7 @@ function drawSlider(min, max) {
             .attr("transform", "translate(380,262) scale(0.8)");
     var x = d3.scale.linear()
             .domain([min, max])
-            .range([0, 200])
+            .range([0, 190])
             .clamp(true);
     var brush = d3.svg.brush()
             .x(x)
@@ -314,7 +317,6 @@ function drawSlider(min, max) {
                     d3.svg.axis()
                     .scale(x)
                     .orient("bottom")
-                    
                     .tickSize(0)
                     .tickPadding(12)
                     )
@@ -334,6 +336,12 @@ function drawSlider(min, max) {
             .attr("class", "handle")
             .attr("transform", "translate(0," + h / 2 + ")")
             .attr("r", 9);
+    slider
+            .call(brush.event)
+            .transition() // gratuitous intro!
+            .duration(750)
+            .call(brush.extent([10, 10]))
+            .call(brush.event);
     function brushed() {
         var value = brush.extent()[0];
         if (d3.event.sourceEvent) { // not a programmatic event
@@ -341,13 +349,11 @@ function drawSlider(min, max) {
             brush.extent([value, value]);
         }
         handle.attr("cx", x(value));
-        svg.selectAll("image").each(function () {
-            var opacity = 1 - .1 * Math.abs(value - d3.select(this).attr("date"));
-            if (opacity <= 0) {
-                d3.select(this).style("display", "none");
-            } else {
-                d3.select(this).style("opacity", opacity).style("display", "block")
-            }
-        });
+        level.selectAll("text").remove();
+        level.append("text")
+                .html("Level : " + Math.round(value))
+                .attr("x", 420)
+                .attr("y", 330);
+
     }
 }
