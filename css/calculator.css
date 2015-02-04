@@ -1,6 +1,6 @@
 body{
     width: 960px;
-    height: 500px;
+    height: 600px;
     margin: auto;
 }
 .hidden { 
@@ -24,7 +24,7 @@ body{
 }
 #calculator{
     width: 960px;
-    height: 500px;
+    height: 600px;
     padding-bottom: 10px;
     position: absolute;
     top: 10px;

@@ -4,6 +4,7 @@ var width = 960,
 // calculation is meant to be carried by R[], array of configured customers
 // set in the memory, sum and other values are then compiled.
 var R = new Array();
+var current = {customer: null, attack: null, defence: null, extra: null}
 
 var svg = d3.select("#calculator").append("svg")
         .attr("width", width)
@@ -52,6 +53,7 @@ main.append("rect")
 var char = main.append("g").attr("id", "mainImage");
 var Slider = svg.append("g").attr("id", "slider");
 var level = main.append("g");
+var currentDamage = main.append("g");
 
 var attack = svg.append("g").attr("id", "attack");
 attack.append("rect")
@@ -82,7 +84,21 @@ extra.append("rect")
         .attr("stroke-width", "2");
 
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
-
+function duration(time) {
+    if (time === 1) {
+        return "vshort.png";
+    } else if (time === 2) {
+        return "short.png";
+    } else if (time === 3) {
+        return "medium.png";
+    } else if (time === 4) {
+        return "long.png";
+    } else if (time === 5) {
+        return "vlong.png";
+    } else {
+        return "error.png";
+    }
+}
 function load() {
     //meant to load a pvp config from url.
     return 1;
@@ -95,23 +111,25 @@ function reloadItems(customer) {
             .enter().append("li")
             .html(function (d) {
                 return d.Recipe;
-            })
-            .style("list-style-image", function (d) {
-                return "url(images/items/icon/" + d.image + ")";
-            })
-            ;
+            }).style("list-style-image", function (d) {
+        return "url(images/items/icon/" + d.image + ")";
+    });
     protection = protections.selectAll(".protections")
             .data(protectionsByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
                 return d.Recipe;
-            });
+            }).style("list-style-image", function (d) {
+        return "url(images/items/icon/" + d.image + ")";
+    });
     supportive = supportives.selectAll(".supportives")
             .data(supportivesByCustomer.get(customer))
             .enter().append("li")
             .html(function (d) {
                 return d.Recipe;
-            });
+            }).style("list-style-image", function (d) {
+        return "url(images/items/icon/" + d.image + ")";
+    });
     weapon
             .on("mousemove", function (d) {
                 var mouse = d3.mouse(svg.node()).map(function (d) {
@@ -120,7 +138,7 @@ function reloadItems(customer) {
                 tooltip.classed("hidden", false)
                         //Values are meant to be computed
                         .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                        .html("<ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+                        .html("<img src='images/" + duration(d.Time) + "' ><ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
             })
             .on("mouseout", function () {
                 tooltip.classed("hidden", true);
@@ -133,7 +151,8 @@ function reloadItems(customer) {
                         .attr("width", 96)
                         .attr("height", 96)
                         .attr("cursor", "pointer")
-                        .attr("xlink:href", "images/items/icon/" + d.image);
+                        .attr("xlink:href", "images/items/small/" + d.image);
+                current.attack = d;
                 t.on("click", function () {
                     attack.selectAll("image").remove();
                 });
@@ -146,7 +165,7 @@ function reloadItems(customer) {
                 tooltip.classed("hidden", false)
                         //Values are meant to be computed
                         .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                        .html("<ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+                        .html("<img src='images/" + duration(d.Time) + "' ><ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
             })
             .on("mouseout", function () {
                 tooltip.classed("hidden", true);
@@ -159,7 +178,8 @@ function reloadItems(customer) {
                         .attr("width", 96)
                         .attr("height", 96)
                         .attr("cursor", "pointer")
-                        .attr("xlink:href", "images/items/icon/" + d.image);
+                        .attr("xlink:href", "images/items/small/" + d.image);
+                current.defence = d;
                 t.on("click", function () {
                     defence.selectAll("image").remove();
                 });
@@ -172,7 +192,7 @@ function reloadItems(customer) {
                 tooltip.classed("hidden", false)
                         //Values are meant to be computed
                         .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                        .html("<ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+                        .html("<img src='images/" + duration(d.Time) + "' ><ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
             })
             .on("mouseout", function () {
                 tooltip.classed("hidden", true);
@@ -185,7 +205,14 @@ function reloadItems(customer) {
                         .attr("width", 96)
                         .attr("height", 96)
                         .attr("cursor", "pointer")
-                        .attr("xlink:href", "images/items/icon/" + d.image);
+                        .attr("xlink:href", "images/items/small/" + d.image);
+                current.extra = d;
+                var damage = parseInt(currentDamage.select("text").html().replace(/\D/g, "")) + Math.round(Math.sqrt(d.Price));
+                currentDamage.selectAll("text").remove();
+                currentDamage.append("text")
+                        .html("Damage : " + damage)
+                        .attr("x", 420)
+                        .attr("y", 380);
                 t.on("click", function () {
                     extra.selectAll("image").remove();
                 });
@@ -272,6 +299,8 @@ d3.json("json/data.json", function (data) {
             })
             .on("click", function (d) {
                 reloadItems(d.id);
+                current.customer = d;
+                main.selectAll("image").remove();
                 attack.selectAll("image").remove();
                 defence.selectAll("image").remove();
                 extra.selectAll("image").remove();
@@ -284,6 +313,13 @@ d3.json("json/data.json", function (data) {
                         .attr("cursor", "pointer")
                         .attr("xlink:href", "images/chars/" + d.image);
                 drawSlider(1, 20);
+                var pvp = main.append("image")
+                        .attr("x", 396)
+                        .attr("y", 400)
+                        .attr("width", 126)
+                        .attr("height", 110)
+                        .attr("cursor", "pointer")
+                        .attr("xlink:href", "images/pvp.png");
                 t.on("click", function () {
                     d3.select("#calculator").selectAll("li").remove();
                     attack.selectAll("image").remove();
@@ -291,69 +327,82 @@ d3.json("json/data.json", function (data) {
                     extra.selectAll("image").remove();
                     char.selectAll("image").remove();
                     Slider.select("g").remove();
-                    level.selectAll("text").remove();
+                    main.selectAll("text").remove();
+                    main.selectAll("image").remove();
+                });
+                pvp.on("click", function () {
+                    d3.select("#calculator").selectAll("li").remove();
+                    attack.selectAll("image").remove();
+                    defence.selectAll("image").remove();
+                    extra.selectAll("image").remove();
+                    char.selectAll("image").remove();
+                    Slider.select("g").remove();
+                    main.selectAll("text").remove();
+                    main.selectAll("image").remove();
                 });
             });
+
+    function drawSlider(min, max) {
+        var h = 50;
+        Slider.select("g").remove();
+        var svgSlider = Slider.attr("height", h)
+                .append("g")
+                .attr("transform", "translate(380,262) scale(0.8)");
+        var x = d3.scale.linear()
+                .domain([min, max])
+                .range([0, 190])
+                .clamp(true);
+        var brush = d3.svg.brush()
+                .x(x)
+                .extent([0, 0])
+                .on("brush", brushed);
+        svgSlider.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + h / 2 + ")")
+                .call(
+                        d3.svg.axis()
+                        .scale(x)
+                        .orient("bottom")
+                        .tickSize(0)
+                        .tickPadding(12)
+                        )
+                .select(".domain")
+                .select(function () {
+                    return this.parentNode.appendChild(this.cloneNode(true));
+                })
+                .attr("class", "halo");
+        var slider = svgSlider.append("g")
+                .attr("class", "slider")
+                .call(brush);
+        slider.selectAll(".extent,.resize")
+                .remove();
+        slider.select(".background")
+                .attr("height", h);
+        var handle = slider.append("circle")
+                .attr("class", "handle")
+                .attr("transform", "translate(0," + h / 2 + ")")
+                .attr("r", 9);
+        slider
+                .call(brush.event)
+                .transition() // gratuitous intro!
+                .duration(750)
+                .call(brush.extent([10, 10]))
+                .call(brush.event);
+        function brushed() {
+            var value = brush.extent()[0];
+            if (d3.event.sourceEvent) { // not a programmatic event
+                value = x.invert(d3.mouse(this)[0]);
+                brush.extent([value, value]);
+            }
+            handle.attr("cx", x(value));
+            main.selectAll("text").remove();
+            level.append("text")
+                    .html("Level : " + Math.round(value))
+                    .attr("x", 420)
+                    .attr("y", 330);
+            current.customer.level = value;
+            Damage();
+        }
+    }
 });
 
-function drawSlider(min, max) {
-    var h = 50;
-    Slider.select("g").remove();
-    var svgSlider = Slider.attr("height", h)
-            .append("g")
-            .attr("transform", "translate(380,262) scale(0.8)");
-    var x = d3.scale.linear()
-            .domain([min, max])
-            .range([0, 190])
-            .clamp(true);
-    var brush = d3.svg.brush()
-            .x(x)
-            .extent([0, 0])
-            .on("brush", brushed);
-    svgSlider.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + h / 2 + ")")
-            .call(
-                    d3.svg.axis()
-                    .scale(x)
-                    .orient("bottom")
-                    .tickSize(0)
-                    .tickPadding(12)
-                    )
-            .select(".domain")
-            .select(function () {
-                return this.parentNode.appendChild(this.cloneNode(true));
-            })
-            .attr("class", "halo");
-    var slider = svgSlider.append("g")
-            .attr("class", "slider")
-            .call(brush);
-    slider.selectAll(".extent,.resize")
-            .remove();
-    slider.select(".background")
-            .attr("height", h);
-    var handle = slider.append("circle")
-            .attr("class", "handle")
-            .attr("transform", "translate(0," + h / 2 + ")")
-            .attr("r", 9);
-    slider
-            .call(brush.event)
-            .transition() // gratuitous intro!
-            .duration(750)
-            .call(brush.extent([10, 10]))
-            .call(brush.event);
-    function brushed() {
-        var value = brush.extent()[0];
-        if (d3.event.sourceEvent) { // not a programmatic event
-            value = x.invert(d3.mouse(this)[0]);
-            brush.extent([value, value]);
-        }
-        handle.attr("cx", x(value));
-        level.selectAll("text").remove();
-        level.append("text")
-                .html("Level : " + Math.round(value))
-                .attr("x", 420)
-                .attr("y", 330);
-
-    }
-}
