@@ -3,8 +3,8 @@ var width = 960,
 
 // calculation is meant to be carried by R[], array of configured customers
 // set in the memory, sum and other values are then compiled.
-var R = new Array();
-var current = {customer: null, attack: null, defence: null, extra: null}
+var R = ["z", "z", "z", "z", "z", "z", "z", "z", "z", "z"];
+var current = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
 
 var svg = d3.select("#calculator").append("svg")
         .attr("width", width)
@@ -84,6 +84,95 @@ extra.append("rect")
         .attr("stroke-width", "2");
 
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
+
+function Damage() {
+    var damage = Math.round(current.customer.baseDamage +
+            Math.sqrt(current.attack.Price) +
+            Math.sqrt(current.defence.Price) +
+            Math.sqrt(current.extra.Price));
+    currentDamage.selectAll("text").remove();
+    currentDamage.append("text")
+            .html("Damage : " + damage)
+            .attr("x", 420)
+            .attr("y", 380);
+}
+function addConfig(position) {
+    result.append("image")
+            .attr("x", 720 - ((position % 2 - 1) * 130))
+            .attr("y", 10 + Math.floor((position - 1) / 2) * 100)
+            .attr("width", 48)
+            .attr("height", 48)
+            .attr("cursor", "pointer")
+            .attr("xlink:href", "images/chars/icon/" + current.customer.icon);
+    if (current.attack.image) {
+        result.append("image")
+                .attr("x", 800 - ((position % 2 - 1) * 130))
+                .attr("y", Math.floor((position - 1) / 2) * 100)
+                .attr("width", 16)
+                .attr("height", 16)
+                .attr("cursor", "pointer")
+                .attr("xlink:href", "images/items/icon/" + current.attack.image);
+    }
+    if (current.defence.image) {
+        result.append("image")
+                .attr("x", 800 - ((position % 2 - 1) * 130))
+                .attr("y", 20 + Math.floor((position - 1) / 2) * 100)
+                .attr("width", 16)
+                .attr("height", 16)
+                .attr("cursor", "pointer")
+                .attr("xlink:href", "images/items/icon/" + current.defence.image);
+    }
+    if (current.extra.image) {
+        result.append("image")
+                .attr("x", 800 - ((position % 2 - 1) * 130))
+                .attr("y", 40 + Math.floor((position - 1) / 2) * 100)
+                .attr("width", 16)
+                .attr("height", 16)
+                .attr("cursor", "pointer")
+                .attr("xlink:href", "images/items/icon/" + current.extra.image);
+    }
+    var edit = result.append("image")
+            .attr("x", 700 - ((position % 2 - 1) * 130))
+            .attr("y", 15 + Math.floor((position - 1) / 2) * 100)
+            .attr("width", 16)
+            .attr("height", 16)
+            .attr("title", "Edit")
+            .attr("cursor", "pointer")
+            .attr("xlink:href", "images/edit.png");
+    edit.on("click", function () {
+        current = R[position - 1];
+        R[position -1] = "z";
+        reloadItems(current.customer.id);
+        main.selectAll("image").remove();
+        attack.selectAll("image").remove();
+        defence.selectAll("image").remove();
+        extra.selectAll("image").remove();
+        char.selectAll("image").remove();
+        var t = char.append("image")
+                .attr("x", 380)
+                .attr("y", 100)
+                .attr("width", 159)
+                .attr("height", 159)
+                .attr("cursor", "pointer")
+                .attr("xlink:href", "images/chars/" + current.customer.image);
+    });
+    var remove = result.append("image")
+            .attr("x", 700 - ((position % 2 - 1) * 130))
+            .attr("y", 35 + Math.floor((position - 1) / 2) * 100)
+            .attr("width", 16)
+            .attr("height", 16)
+            .attr("cursor", "pointer")
+            .attr("xlink:href", "images/remove.png");
+    result.append("text")
+            .html(function () {
+                return Math.round(current.customer.baseDamage +
+                        Math.sqrt(current.attack.Price) +
+                        Math.sqrt(current.defence.Price) +
+                        Math.sqrt(current.extra.Price));
+            })
+            .attr("x", 750 - ((position % 2 - 1) * 130))
+            .attr("y", 90 + Math.floor((position - 1) / 2) * 100);
+}
 function duration(time) {
     if (time === 1) {
         return "vshort.png";
@@ -153,8 +242,11 @@ function reloadItems(customer) {
                         .attr("cursor", "pointer")
                         .attr("xlink:href", "images/items/small/" + d.image);
                 current.attack = d;
+                Damage();
                 t.on("click", function () {
                     attack.selectAll("image").remove();
+                    current.attack = {Price: null};
+                    Damage();
                 });
             });
     protection
@@ -180,8 +272,11 @@ function reloadItems(customer) {
                         .attr("cursor", "pointer")
                         .attr("xlink:href", "images/items/small/" + d.image);
                 current.defence = d;
+                Damage();
                 t.on("click", function () {
                     defence.selectAll("image").remove();
+                    current.defence = {Price: null};
+                    Damage();
                 });
             });
     supportive
@@ -207,14 +302,11 @@ function reloadItems(customer) {
                         .attr("cursor", "pointer")
                         .attr("xlink:href", "images/items/small/" + d.image);
                 current.extra = d;
-                var damage = parseInt(currentDamage.select("text").html().replace(/\D/g, "")) + Math.round(Math.sqrt(d.Price));
-                currentDamage.selectAll("text").remove();
-                currentDamage.append("text")
-                        .html("Damage : " + damage)
-                        .attr("x", 420)
-                        .attr("y", 380);
+                Damage();
                 t.on("click", function () {
                     extra.selectAll("image").remove();
+                    current.extra = {Price: null};
+                    Damage();
                 });
             });
 }
@@ -299,6 +391,7 @@ d3.json("json/data.json", function (data) {
             })
             .on("click", function (d) {
                 reloadItems(d.id);
+                current = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
                 current.customer = d;
                 main.selectAll("image").remove();
                 attack.selectAll("image").remove();
@@ -329,8 +422,12 @@ d3.json("json/data.json", function (data) {
                     Slider.select("g").remove();
                     main.selectAll("text").remove();
                     main.selectAll("image").remove();
+                    current = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
                 });
                 pvp.on("click", function () {
+                    var position = R.indexOf('z');
+                    R[position] = current;
+                    addConfig(position + 1);
                     d3.select("#calculator").selectAll("li").remove();
                     attack.selectAll("image").remove();
                     defence.selectAll("image").remove();
@@ -339,6 +436,8 @@ d3.json("json/data.json", function (data) {
                     Slider.select("g").remove();
                     main.selectAll("text").remove();
                     main.selectAll("image").remove();
+                    /// do add data here
+                    current = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
                 });
             });
 
@@ -395,14 +494,14 @@ d3.json("json/data.json", function (data) {
                 brush.extent([value, value]);
             }
             handle.attr("cx", x(value));
-            main.selectAll("text").remove();
+            level.selectAll("text").remove();
             level.append("text")
                     .html("Level : " + Math.round(value))
                     .attr("x", 420)
                     .attr("y", 330);
             current.customer.level = value;
+            current.customer.baseDamage = data.game.levels[Math.round(value)];
             Damage();
         }
     }
 });
-
