@@ -61,7 +61,11 @@ body{
     top: 368px;
     height: 182px;
 }
-
+.holder{
+    fill: rgba(200, 200, 200, 0.2);
+    stroke: #000;
+    stroke-width: 2;
+}
 //// Slider ////
 .axis {
   font-size: 11px;
