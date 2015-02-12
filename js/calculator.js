@@ -2,7 +2,6 @@ var width = 960, height = 600;
 
 var R = ["z", "z", "z", "z", "z", "z", "z", "z", "z", "z"];
 var current = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
-var levels = new Array();
 
 var svg = d3.select("#calculator").append("svg")
         .attr("width", width)
@@ -20,12 +19,15 @@ var supportives = d3.select("#extra");
 var Slider = main.append("g").attr("id", "slider");
 var level = main.append("g");
 var currentDamage = main.append("g");
+var allDamage = d3.select("#Total");
 var attack = main.append("g").attr("id", "attack");
 var defence = main.append("g").attr("id", "defence");
 var extra = main.append("g").attr("id", "extra");
+var levels = new Array();
 var results = new Array();
 var resultRect = new Array();
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
+var slider;
 
 d3.selection.prototype.holder = function (x, y, w, h) {
     var rect = this.append("rect").attr("x", x).attr("y", y)
@@ -120,7 +122,11 @@ function drawPVP() {
             .attr("cursor", "pointer")
             .attr("xlink:href", "images/pvp.png");
     pvp.on("click", function () {
+        slider.interrupt().transition();
         var position = R.indexOf('z');
+        if (position === -1) {
+            window.alert("you can only send 10 customers");
+        }
         R[position] = current;
         send(position);
         d3.select("#calculator").selectAll("li").remove();
@@ -152,7 +158,6 @@ function editChar(position) {
     reloadItems(current.customer.id, supportives, supportivesByCustomer, extra, "extra", 340);
     results[position].selectAll("image").remove();
     results[position].selectAll("text").remove();
-    main.selectAll("image").remove();
     drawChar(current.customer);
     drawPVP();
     if (current.attack.image) {
@@ -165,6 +170,7 @@ function editChar(position) {
         addItem(current.extra, extra, "extra", 340);
     }
     drawSlider(current.customer.min, current.customer.max, current.customer.level);
+    totalDamage();
 }
 function send(position) {
     results[position].sent(position, 10, 10, 48, 48, "chars/icon/" + current.customer.icon);
@@ -180,6 +186,7 @@ function send(position) {
     var edit = results[position].sent(position, 10, 70, 20, 20, "edit.png");
     edit.attr("cursor", "pointer");
     var remove = results[position].sent(position, 40, 70, 20, 20, "remove.png");
+    remove.attr("cursor", "pointer");
     results[position].append("text")
             .html(function () {
                 return Math.round(current.customer.baseDamage +
@@ -192,6 +199,13 @@ function send(position) {
     edit.on("click", function () {
         editChar(position);
     });
+    remove.on("click", function () {
+        R[position] = "z";
+        results[position].selectAll("image").remove();
+        results[position].selectAll("text").remove();
+        totalDamage();
+    });
+    totalDamage();
 }
 function reloadItems(customer, category, map, target, dataTarget, y) {
     listedItem = category.selectAll(".items")
@@ -209,7 +223,9 @@ function reloadItems(customer, category, map, target, dataTarget, y) {
                 });
                 tooltip.classed("hidden", false)
                         .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                        .html("<img src='images/" + duration(d.Time) + "' ><ul><li>" + d.Price + " $ </li><li>" + d.Worker + "</li><li>" + d.Time + "</li></ul>");
+                        .html("<img src='images/" + duration(d.Time) +
+                        "' ><ul><li>" + d.Price + " $ </li><li>" + d.Worker +
+                        "</li><li>lvl : " + d.Level + "</li></ul>");
             })
             .on("mouseout", function () {
                 tooltip.classed("hidden", true);
@@ -220,15 +236,53 @@ function reloadItems(customer, category, map, target, dataTarget, y) {
 
 }
 function Damage() {
-    var damage = Math.round(current.customer.baseDamage +
-            Math.sqrt(current.attack.Price) +
-            Math.sqrt(current.defence.Price) +
-            Math.sqrt(current.extra.Price));
+    var damage = current.customer.baseDamage +
+            Math.floor(Math.sqrt(current.attack.Price)) +
+            Math.floor(Math.sqrt(current.defence.Price)) +
+            Math.floor(Math.sqrt(current.extra.Price));
     currentDamage.selectAll("text").remove();
     currentDamage.append("text")
             .html("Damage : " + damage)
             .attr("x", 420)
             .attr("y", 380);
+}
+function totalDamage() {
+    var total = 0;
+    var fighter = 0;
+    var rogue = 0;
+    var caster = 0;
+    for (var i = 0; i < 10; i++) {
+        if (R[i] !== 'z') {
+            total += R[i].customer.baseDamage +
+                    Math.floor(Math.sqrt(R[i].attack.Price)) +
+                    Math.floor(Math.sqrt(R[i].defence.Price)) +
+                    Math.floor(Math.sqrt(R[i].extra.Price));
+            if (R[i].customer.class === "fighter") {
+                fighter += R[i].customer.baseDamage +
+                        Math.floor(Math.sqrt(R[i].attack.Price)) +
+                        Math.floor(Math.sqrt(R[i].defence.Price)) +
+                        Math.floor(Math.sqrt(R[i].extra.Price));
+            }
+            if (R[i].customer.class === "rogue") {
+                rogue += R[i].customer.baseDamage +
+                        Math.floor(Math.sqrt(R[i].attack.Price)) +
+                        Math.floor(Math.sqrt(R[i].defence.Price)) +
+                        Math.floor(Math.sqrt(R[i].extra.Price));
+            }
+            if (R[i].customer.class === "caster") {
+                caster += R[i].customer.baseDamage +
+                        Math.floor(Math.sqrt(R[i].attack.Price)) +
+                        Math.floor(Math.sqrt(R[i].defence.Price)) +
+                        Math.floor(Math.sqrt(R[i].extra.Price));
+            }
+        }
+    }
+    allDamage.selectAll("div").remove();
+    allDamage
+            .html("<div id='fighter-total'>" + fighter +
+            "</div><div id='rogue-total'>" + rogue +
+            "</div><div id='caster-total'>"+ caster +
+            "</div><div id='totalDamage'>Damage : " + total + "</div>");
 }
 function drawSlider(min, max, v) {
     var h = 50;
@@ -260,7 +314,7 @@ function drawSlider(min, max, v) {
                 return this.parentNode.appendChild(this.cloneNode(true));
             })
             .attr("class", "halo");
-    var slider = svgSlider.append("g")
+    slider = svgSlider.append("g")
             .attr("class", "slider")
             .call(brush);
     slider.selectAll(".extent,.resize")
