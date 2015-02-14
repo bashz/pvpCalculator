@@ -24,6 +24,7 @@ var attack = main.append("g").attr("id", "attack");
 var defence = main.append("g").attr("id", "defence");
 var extra = main.append("g").attr("id", "extra");
 var levels = new Array();
+var ressources = new Array();
 var results = new Array();
 var resultRect = new Array();
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
@@ -73,6 +74,13 @@ function duration(time) {
     } else {
         return "error.png";
     }
+}
+function formatRessources(d) {
+    inner = "";
+    for (var i in d.Ressources) {
+        inner += "<img src='images/ressources/" + ressources[i] + "'>" + d.Ressources[i] + " ";
+    }
+    return inner;
 }
 function addItem(d, target, dataTarget, y) {
     target.selectAll("image").remove();
@@ -127,7 +135,7 @@ function drawPVP() {
         if (position === -1) {
             window.alert("you can only send 10 customers");
         }
-        R[position] = current;
+        R[position] = JSON.parse(JSON.stringify(current));
         send(position);
         d3.select("#calculator").selectAll("li").remove();
         attack.selectAll("image").remove();
@@ -151,6 +159,7 @@ function newChar(d) {
     drawPVP();
 }
 function editChar(position) {
+    d3.select("#calculator").selectAll("li").remove();
     current = R[position];
     R[position] = "z";
     reloadItems(current.customer.id, weapons, weaponsByCustomer, attack, "attack", 60);
@@ -189,10 +198,10 @@ function send(position) {
     remove.attr("cursor", "pointer");
     results[position].append("text")
             .html(function () {
-                return Math.round(current.customer.baseDamage +
-                        Math.sqrt(current.attack.Price) +
-                        Math.sqrt(current.defence.Price) +
-                        Math.sqrt(current.extra.Price));
+                return current.customer.baseDamage +
+                        Math.floor(Math.sqrt(current.attack.Price)) +
+                        Math.floor(Math.sqrt(current.defence.Price)) +
+                        Math.floor(Math.sqrt(current.extra.Price));
             })
             .attr("x", 80 + 830 - ((position % 2) * 130))
             .attr("y", 86 + Math.floor(position / 2) * 100);
@@ -224,8 +233,22 @@ function reloadItems(customer, category, map, target, dataTarget, y) {
                 tooltip.classed("hidden", false)
                         .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
                         .html("<img src='images/" + duration(d.Time) +
-                        "' ><ul><li>" + d.Price + " $ </li><li>" + d.Worker +
-                        "</li><li>lvl : " + d.Level + "</li></ul>");
+                                "' ><ul><li style='color:#a0a0ff;font-weight:bold;'>Damage : " + Math.floor(Math.sqrt(d.Price)) +
+                                "</li><li>" + d.Price +
+                                " $ </li><li>" + d.Worker +
+                                "</li><li>lvl : " + d.Level +
+                                "</li><li>Craft : " + d.CXP +
+                                " xp</li></ul>" +
+                                "<ul>" + ((d.Level <= current.customer.level) ? "<li style='color:#00ff00;'>10 %" :
+                                        (d.Level <= (current.customer.level + 1)) ? "<li style='color:#ffff00;'>25 %" :
+                                        (d.Level <= (current.customer.level + 2)) ? "<li style='color:#ffaa00;'>50 %" :
+                                        "<li style='color:#ff0000;'>90 %") +
+                                "</li>" + (d.Rare ? "<li style='color:#edbd00;font-weight:bold;'>Rare" : "<li style='color:#00ff00;'>Common") +
+                                "</li><li>" + d.Workstation +
+                                "</li><li>" + d.MaxResource +
+                                "</li><li>Sell : " + d.SXP +
+                                " xp</li></ul><div>" + formatRessources(d) +
+                                "</div>");
             })
             .on("mouseout", function () {
                 tooltip.classed("hidden", true);
@@ -280,9 +303,9 @@ function totalDamage() {
     allDamage.selectAll("div").remove();
     allDamage
             .html("<div id='fighter-total'>" + fighter +
-            "</div><div id='rogue-total'>" + rogue +
-            "</div><div id='caster-total'>"+ caster +
-            "</div><div id='totalDamage'>Damage : " + total + "</div>");
+                    "</div><div id='rogue-total'>" + rogue +
+                    "</div><div id='caster-total'>" + caster +
+                    "</div><div id='totalDamage'>Damage : " + total + "</div>");
 }
 function drawSlider(min, max, v) {
     var h = 50;
@@ -343,16 +366,18 @@ function drawSlider(min, max, v) {
                 .html("Level : " + Math.round(value))
                 .attr("x", 420)
                 .attr("y", 330);
-        current.customer.level = value;
+        current.customer.level = Math.round(value);
         current.customer.baseDamage = levels[Math.round(value)];
         Damage();
     }
 }
 
 initInterface();
+totalDamage()
 var char = main.append("g").attr("id", "mainImage");
 d3.json("json/data.json", function (data) {
     levels = data.game.levels;
+    ressources = data.game.ressources;
     var charCell = width / data.game.chars.length;
     chars.selectAll(".chars")
             .data(data.game.chars)
