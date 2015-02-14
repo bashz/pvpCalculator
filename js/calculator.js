@@ -25,6 +25,7 @@ var defence = main.append("g").attr("id", "defence");
 var extra = main.append("g").attr("id", "extra");
 var levels = new Array();
 var ressources = new Array();
+var workers = new Array();
 var results = new Array();
 var resultRect = new Array();
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
@@ -93,11 +94,40 @@ function addItem(d, target, dataTarget, y) {
             .attr("xlink:href", "images/items/small/" + d.image);
     current[dataTarget] = d;
     Damage();
-    t.on("click", function () {
-        target.selectAll("image").remove();
-        current[dataTarget] = {Price: null};
-        Damage();
-    });
+    t
+            .on("mousemove", function () {
+                var mouse = d3.mouse(svg.node()).map(function (d) {
+                    return parseInt(d);
+                });
+                tooltip.classed("hidden", false)
+                        .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
+                        .html("<ul><li><img style='display:block;' width='53' height='53' src='" + workers[d.Worker] +
+                                "'></li><li><img src='images/" + duration(d.Time) +
+                                "' ></li></ul><ul><li style='color:#a0a0ff;font-weight:bold;'>Damage : " + Math.floor(Math.sqrt(d.Price)) +
+                                "</li><li>" + d.Price +
+                                " $ </li><li>" + d.Category +
+                                "</li><li>lvl : " + d.Level +
+                                "</li><li>Craft : " + d.CXP +
+                                " xp</li></ul>" +
+                                "<ul>" + ((d.Level <= current.customer.level) ? "<li style='color:#00ff00;'>10 %" :
+                                        (d.Level <= (current.customer.level + 1)) ? "<li style='color:#ffff00;'>25 %" :
+                                        (d.Level <= (current.customer.level + 2)) ? "<li style='color:#ffaa00;'>50 %" :
+                                        "<li style='color:#ff0000;'>90 %") +
+                                "</li>" + (d.Rare ? "<li style='color:#edbd00;font-weight:bold;'>Rare" : "<li style='color:#00ff00;'>Common") +
+                                "</li><li>" + d.Workstation +
+                                "</li><li>" + d.MaxResource +
+                                "</li><li>Sell : " + d.SXP +
+                                " xp</li></ul><div>" + formatRessources(d) +
+                                "</div>");
+            })
+            .on("mouseout", function () {
+                tooltip.classed("hidden", true);
+            })
+            .on("click", function () {
+                target.selectAll("image").remove();
+                current[dataTarget] = {Price: null};
+                Damage();
+            });
 }
 function drawChar(d) {
     main.selectAll("image").remove();
@@ -251,10 +281,11 @@ function reloadItems(customer, category, map, target, dataTarget, y) {
                 });
                 tooltip.classed("hidden", false)
                         .attr("style", "left:" + (mouse[0] + 10) + "px;top:" + (mouse[1] + 10) + "px")
-                        .html("<img src='images/" + duration(d.Time) +
-                                "' ><ul><li style='color:#a0a0ff;font-weight:bold;'>Damage : " + Math.floor(Math.sqrt(d.Price)) +
+                        .html("<ul><li><img style='display:block;' width='53' height='53' src='" + workers[d.Worker] +
+                                "'></li><li><img src='images/" + duration(d.Time) +
+                                "' ></li></ul><ul><li style='color:#a0a0ff;font-weight:bold;'>Damage : " + Math.floor(Math.sqrt(d.Price)) +
                                 "</li><li>" + d.Price +
-                                " $ </li><li>" + d.Worker +
+                                " $ </li><li>" + d.Category +
                                 "</li><li>lvl : " + d.Level +
                                 "</li><li>Craft : " + d.CXP +
                                 " xp</li></ul>" +
@@ -397,6 +428,7 @@ var char = main.append("g").attr("id", "mainImage");
 d3.json("json/data.json", function (data) {
     levels = data.game.levels;
     ressources = data.game.ressources;
+    workers = data.game.worker;
     var charCell = width / data.game.chars.length;
     chars.selectAll(".chars")
             .data(data.game.chars)
