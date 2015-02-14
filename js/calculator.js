@@ -8,6 +8,7 @@ var svg = d3.select("#calculator").append("svg")
         .attr("height", height);
 
 var tooltip = d3.select("#calculator").append("div").attr("class", "tooltip hidden");
+var categorytip = d3.select("#calculator").append("div").attr("class", "categorytip hidden");
 var chars = svg.append("g").attr("id", "chars");
 var result = svg.append("g").attr("id", "result");
 var main = svg.append("g").attr("id", "main");
@@ -26,6 +27,7 @@ var extra = main.append("g").attr("id", "extra");
 var levels = new Array();
 var ressources = new Array();
 var workers = new Array();
+var categories = new Array();
 var results = new Array();
 var resultRect = new Array();
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
@@ -429,6 +431,7 @@ d3.json("json/data.json", function (data) {
     levels = data.game.levels;
     ressources = data.game.ressources;
     workers = data.game.worker;
+    categories = data.game.category;
     var charCell = width / data.game.chars.length;
     chars.selectAll(".chars")
             .data(data.game.chars)
@@ -477,7 +480,31 @@ d3.json("json/data.json", function (data) {
                         .duration(300)
                         .attr("cursor", "pointer");
             })
+            .on("mousemove", function (d) {
+                var mouse = d3.mouse(svg.node()).map(function (d) {
+                    return parseInt(d);
+                });
+                categorytip.classed("hidden", false)
+                        .attr("style", "left:" + (mouse[0] + 16) + "px;top:" + (mouse[1] - 160) + "px")
+                        .html(function () {
+                            var r = "<div>";
+                            d.weapons.forEach(function (cat) {
+                                r += "<img src='images/items/categories/" + categories[cat] + "'>";
+                            });
+                            r += "</div><div>";
+                            d.protections.forEach(function (cat) {
+                                r += "<img src='images/items/categories/" + categories[cat] + "'>";
+                            });
+                            r += "</div><div>";
+                            d.supportive.forEach(function (cat) {
+                                r += "<img src='images/items/categories/" + categories[cat] + "'>";
+                            });
+                            r += "</div>";
+                            return r;
+                        });
+            })
             .on("mouseout", function () {
+                categorytip.classed("hidden", true);
                 d3.select(this)
                         .transition()
                         .attr("y", 560)

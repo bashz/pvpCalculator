@@ -61,21 +61,7 @@
             },
             "levels":[0,10,17,20,22,45,50,55,71,87,100,122,141,158,173,187,200,224,245,316,447],
             "ressources":{"Iron":"iron.png","Wood":"wood.png","Herbs":"herbs.png","Leather":"leather.png","Fabric":"fabric.png","Powder":"powder.png","Dyes":"dyes.png","Elfwood":"elfwood.png","Glass":"glass.png","Oil":"oil.png","Ironwood":"ironwood.png","Steel":"steel.png","Crystals":"crystals.png","Mithril":"mithril.png","Gems":"gems.png","Acid":"acid.png","Tear":"tear.png","Volcanic":"volcanic.png","Shell":"shell.png","Feather":"feather.png","Ice":"ice.png","Horn":"horn.png","Moon":"moon.png","Roaring":"roaring.png","Silk":"silk.png","Shadow":"shadow.png","Dragon":"dragon.png","Sun":"sun.png","Divine":"devine.png"},
-            "category":{},
-            "worker":{
-                "Shopkeeper":"http://cdn.edgebee.com/static/shopr2/characters/heads/worker_male_head.png",
-                "Blacksmith":"http://cdn.edgebee.com/static/shopr2/characters/heads/blacksmith_male_head.png",
-                "Carpenter":"http://cdn.edgebee.com/static/shopr2/characters/heads/carpenter_female_head.png",
-                "Druid":"http://cdn.edgebee.com/static/shopr2/characters/heads/druid_male_head.png",
-                "Tailor":"http://cdn.edgebee.com/static/shopr2/characters/heads/tailor_female_head.png",
-                "Armorer":"http://cdn.edgebee.com/static/shopr2/characters/heads/armorer_female_head.png",
-                "Leather-worker":"http://cdn.edgebee.com/static/shopr2/characters/heads/leatherworker_male_head.png",
-                "Bowyer":"http://cdn.edgebee.com/static/shopr2/characters/heads/bowyer_female_head.png",
-                "Sorceress":"http://cdn.edgebee.com/static/shopr2/characters/heads/sorceress_female_head.png",
-                "Tinkerer":"http://cdn.edgebee.com/static/shopr2/characters/heads/tinkerer_male_head.png",
-                "Jeweler":"http://cdn.edgebee.com/static/shopr2/characters/heads/jeweler_male_head.png",
-                "Luthier":"http://cdn.edgebee.com/static/shopr2/characters/heads/luthier_male_head.png",
-                "Enchanter":"http://cdn.edgebee.com/static/shopr2/characters/heads/enchanter_male_head.png"
-            }
+            "category":{"Axes":"Axes.png","Bows":"Bows.png","Daggers":"Daggers.png","Guns":"Guns.png","Maces":"Maces.png","Music":"Music.png","Spears":"Spears.png","Staves":"Staves.png","Swords":"Swords.png","Thrown":"Thrown.png","Armor":"Armor.png","Boots":"Boots.png","Bracers":"Bracers.png","Clothes":"Clothes.png","Gauntlets":"Gauntlets.png","Gloves":"Gloves.png","Hats":"Hats.png","Heavy Armor":"Heavy Armor.png","Heavy Boots":"Heavy Boots.png","Heavy Helmets":"Heavy Helmets.png","Helmets":"Helmets.png","Shields":"Shields.png","Shoes":"Shoes.png","Amulets":"Amulets.png","Herbs":"Herbs.png","Potions":"Potions.png","Rings":"Rings.png","Scrolls":"Scrolls.png"},
+            "worker":{"Shopkeeper":"http://cdn.edgebee.com/static/shopr2/characters/heads/worker_male_head.png","Blacksmith":"http://cdn.edgebee.com/static/shopr2/characters/heads/blacksmith_male_head.png","Carpenter":"http://cdn.edgebee.com/static/shopr2/characters/heads/carpenter_female_head.png","Druid":"http://cdn.edgebee.com/static/shopr2/characters/heads/druid_male_head.png","Tailor":"http://cdn.edgebee.com/static/shopr2/characters/heads/tailor_female_head.png","Armorer":"http://cdn.edgebee.com/static/shopr2/characters/heads/armorer_female_head.png","Leather-worker":"http://cdn.edgebee.com/static/shopr2/characters/heads/leatherworker_male_head.png","Bowyer":"http://cdn.edgebee.com/static/shopr2/characters/heads/bowyer_female_head.png","Sorceress":"http://cdn.edgebee.com/static/shopr2/characters/heads/sorceress_female_head.png","Tinkerer":"http://cdn.edgebee.com/static/shopr2/characters/heads/tinkerer_male_head.png","Jeweler":"http://cdn.edgebee.com/static/shopr2/characters/heads/jeweler_male_head.png","Luthier":"http://cdn.edgebee.com/static/shopr2/characters/heads/luthier_male_head.png","Enchanter":"http://cdn.edgebee.com/static/shopr2/characters/heads/enchanter_male_head.png"}
         }
 }

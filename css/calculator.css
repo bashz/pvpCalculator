@@ -24,6 +24,22 @@ body{
     padding: 0 10px 0 0;
     display: inline-block;
 }
+.categorytip {
+    color: #fff; 
+    background-image: url(../images/inventory.png);
+    width: 150px;
+    height: 100px;
+    padding: 30px 24px; 
+    opacity: 0.9; 
+    position: absolute;
+    z-index: 2;
+}
+.categorytip ul{
+    list-style: none;
+    margin: 0;
+    padding: 0 10px 0 0;
+    display: inline-block;
+}
 #calculator{
     width: 960px;
     height: 600px;
