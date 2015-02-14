@@ -129,6 +129,25 @@ function drawPVP() {
             .attr("height", 110)
             .attr("cursor", "pointer")
             .attr("xlink:href", "images/pvp.png");
+    var t = pvp.transition()
+            .duration(1500).delay(750)
+            .each(highlight);
+    function highlight() {
+        var p = d3.select(this);
+        (function repeat() {
+            p = p.transition()
+                    .attr("x", 396)
+                    .attr("y", 400)
+                    .attr("width", 126)
+                    .attr("height", 110)
+                    .transition()
+                    .attr("x", 391)
+                    .attr("y", 396)
+                    .attr("width", 136)
+                    .attr("height", 118)
+                    .each("end", repeat);
+        })();
+    }
     pvp.on("click", function () {
         slider.interrupt().transition();
         var position = R.indexOf('z');
