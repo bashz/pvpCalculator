@@ -20,13 +20,14 @@ var supportives = d3.select("#extra");
 var Slider = main.append("g").attr("id", "slider");
 var level = main.append("g");
 var currentDamage = main.append("g");
-var allDamage = d3.select("#Total");
+var allDamage = d3.select("#total");
 var attack = main.append("g").attr("id", "attack");
 var defence = main.append("g").attr("id", "defence");
 var extra = main.append("g").attr("id", "extra");
 var levels = new Array();
 var ressources = new Array();
 var workers = new Array();
+var krowns = new Array();
 var categories = new Array();
 var results = new Array();
 var resultRect = new Array();
@@ -320,14 +321,20 @@ function Damage() {
             .html("Damage : " + damage)
             .attr("x", 420)
             .attr("y", 380);
+//    console.log(current.customer.name + current.attack.Recipe + current.defence.Recipe + current.extra.Recipe);
 }
 function totalDamage() {
     var total = 0;
     var fighter = 0;
     var rogue = 0;
     var caster = 0;
+    var krown = 0;
+    var price = 0;
     for (var i = 0; i < 10; i++) {
         if (R[i] !== 'z') {
+            price += Math.round(breakChance(R[i].customer.level, R[i].attack.Level) * R[i].attack.Price + 
+                    breakChance(R[i].customer.level, R[i].defence.Level) * R[i].defence.Price +
+                    breakChance(R[i].customer.level, R[i].extra.Level) * R[i].extra.Price); 
             total += R[i].customer.baseDamage +
                     Math.floor(Math.sqrt(R[i].attack.Price)) +
                     Math.floor(Math.sqrt(R[i].defence.Price)) +
@@ -352,12 +359,43 @@ function totalDamage() {
             }
         }
     }
+    var rest = total;
+    for (var i = 0; i < krowns.length; i++){
+        rest = rest - krowns[i];
+        if(rest >= 0){
+            krown += 5;
+        }else{
+            break;
+        }
+        if(i+1 === krowns.length){
+            krown += Math.floor(rest / 2000) * 5; 
+        }
+    }
     allDamage.selectAll("div").remove();
     allDamage
-            .html("<div id='fighter-total'>" + fighter +
-                    "</div><div id='rogue-total'>" + rogue +
-                    "</div><div id='caster-total'>" + caster +
-                    "</div><div id='totalDamage'>Damage : " + total + "</div>");
+            .html(
+            "<div id='metrics'>" + 
+                "<div id='krowns'><img src='images/krowns.png'> X " + krown +
+                "</div><div id='gold'><img src='images/gold.png'> X " + price +
+                "</div>"+
+            "</div>" +
+            "<div id='damage'><div id='fighter-total'>" + fighter +
+                "</div><div id='rogue-total'>" + rogue +
+                "</div><div id='caster-total'>" + caster +
+                "</div><div id='totalDamage'>Damage : " + total + "</div>" +
+            "</div>");
+}
+function breakChance(level, itemLevel){
+    var breaks = [0.1,0.25,0.5,0.9];
+    var i = 0;
+    if (itemLevel - level < 0){
+        i = 0;
+    }else if(itemLevel - level > 3){
+        i = 3;
+    }else{
+        i = itemLevel - level;
+    }
+    return breaks[i];
 }
 function drawSlider(min, max, v) {
     var h = 50;
@@ -432,6 +470,7 @@ d3.json("json/data.json", function (data) {
     ressources = data.game.ressources;
     workers = data.game.worker;
     categories = data.game.category;
+    krowns = data.game.krowns;
     var charCell = width / data.game.chars.length;
     chars.selectAll(".chars")
             .data(data.game.chars)
@@ -449,11 +488,11 @@ d3.json("json/data.json", function (data) {
             .attr("stroke", "#000")
             .attr("fill", function (d) {
                 if (d.class === "fighter")
-                    return "rgb(255, 0, 0)";
+                    return "#ea6666";
                 else if (d.class === "rogue")
-                    return "rgb(255, 255, 0)";
+                    return "#ffd066";
                 else if (d.class === "caster")
-                    return "rgb(0, 255, 0)";
+                    return "#77e977";
                 else
                     return "rgb(120, 120,120)";
             });
