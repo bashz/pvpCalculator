@@ -14,3 +14,8 @@ I want to personnaly thank the most social ingame city : __Takumitown__ , especi
 - _Medea_Kolchis_
 
 For contributing with knowledge, data and equations.
+
+Disclamer
+=========
+
+No Animals Were Harmed during this work.

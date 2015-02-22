@@ -32,6 +32,7 @@ var categories = new Array();
 var results = new Array();
 var resultRect = new Array();
 var weaponsByCustomer = d3.map(), protectionsByCustomer = d3.map(), supportivesByCustomer = d3.map();
+var weaponsById = d3.map(), protectionsById = d3.map(), supportivesById = d3.map(), customerById = d3.map();
 var slider;
 
 d3.selection.prototype.holder = function (x, y, w, h) {
@@ -85,6 +86,44 @@ function formatRessources(d) {
         inner += "<img src='images/ressources/" + ressources[i] + "'>" + d.Ressources[i] + " ";
     }
     return inner;
+}
+function writePermaLink() {
+    d3.select("#perma").attr("value", permaLink).classed("hidden", false);
+    d3.select("#permalink").classed("lifted", true);
+}
+function permaLink() {
+    var permalink = window.location.origin + window.location.pathname + "?b=";
+    for (var i = 0; i < 10; i++) {
+        if (R[i] !== 'z') {
+            permalink += R[i].customer.i + String.fromCharCode(R[i].customer.level + 96) +
+                    (R[i].attack.i || 'zz') +
+                    (R[i].defence.i || 'zz') +
+                    (R[i].extra.i || 'zz');
+        }
+    }
+    if (permalink === window.location.origin + window.location.pathname + "?b=")
+        permalink = window.location.origin + window.location.pathname;
+    return permalink;
+}
+function loadBuild(permalink) {
+    if (permalink.length % 8 !== 0)
+        window.alert("Miss-formated permalink :/ Would you please verify your link?");
+    var charz = permalink.length / 8;
+    for (var i = 0; i < charz; i++) {
+        var toLoad = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
+        toLoad.customer = customerById.get(permalink[0]);
+        toLoad.customer.level = parseInt(permalink[1], 32) - 9;
+        toLoad.customer.baseDamage = levels[toLoad.customer.level];
+        if ((permalink[2] + permalink[3]) !== 'zz')
+            toLoad.attack = weaponsById.get(permalink[2] + permalink[3]);
+        if ((permalink[4] + permalink[5]) !== 'zz')
+            toLoad.defence = protectionsById.get(permalink[4] + permalink[5]);
+        if ((permalink[6] + permalink[7]) !== 'zz')
+            toLoad.extra = supportivesById.get(permalink[6] + permalink[7]);
+        R[i] = JSON.parse(JSON.stringify(toLoad));
+        send(i, toLoad);
+        permalink = permalink.slice(8);
+    }
 }
 function addItem(d, target, dataTarget, y) {
     target.selectAll("image").remove();
@@ -188,7 +227,7 @@ function drawPVP() {
             window.alert("you can only send 10 customers");
         }
         R[position] = JSON.parse(JSON.stringify(current));
-        send(position);
+        send(position, current);
         d3.select("#calculator").selectAll("li").remove();
         attack.selectAll("image").remove();
         defence.selectAll("image").remove();
@@ -233,7 +272,7 @@ function editChar(position) {
     drawSlider(current.customer.min, current.customer.max, current.customer.level);
     totalDamage();
 }
-function send(position) {
+function send(position, current) {
     results[position].sent(position, 10, 10, 48, 48, "chars/icon/" + current.customer.icon);
     if (current.attack.image) {
         results[position].sent(position, 70, 6, 16, 16, "items/icon/" + current.attack.image);
@@ -321,7 +360,6 @@ function Damage() {
             .html("Damage : " + damage)
             .attr("x", 420)
             .attr("y", 380);
-//    console.log(current.customer.name + current.attack.Recipe + current.defence.Recipe + current.extra.Recipe);
 }
 function totalDamage() {
     var total = 0;
@@ -332,9 +370,9 @@ function totalDamage() {
     var price = 0;
     for (var i = 0; i < 10; i++) {
         if (R[i] !== 'z') {
-            price += Math.round(breakChance(R[i].customer.level, R[i].attack.Level) * R[i].attack.Price + 
+            price += Math.round(breakChance(R[i].customer.level, R[i].attack.Level) * R[i].attack.Price +
                     breakChance(R[i].customer.level, R[i].defence.Level) * R[i].defence.Price +
-                    breakChance(R[i].customer.level, R[i].extra.Level) * R[i].extra.Price); 
+                    breakChance(R[i].customer.level, R[i].extra.Level) * R[i].extra.Price);
             total += R[i].customer.baseDamage +
                     Math.floor(Math.sqrt(R[i].attack.Price)) +
                     Math.floor(Math.sqrt(R[i].defence.Price)) +
@@ -360,39 +398,41 @@ function totalDamage() {
         }
     }
     var rest = total;
-    for (var i = 0; i < krowns.length; i++){
+    for (var i = 0; i < krowns.length; i++) {
         rest = rest - krowns[i];
-        if(rest >= 0){
+        if (rest >= 0) {
             krown += 5;
-        }else{
+        } else {
             break;
         }
-        if(i+1 === krowns.length){
-            krown += Math.floor(rest / 2000) * 5; 
+        if (i + 1 === krowns.length) {
+            krown += Math.floor(rest / 2000) * 5;
         }
     }
     allDamage.selectAll("div").remove();
     allDamage
             .html(
-            "<div id='metrics'>" + 
-                "<div id='krowns'><img src='images/krowns.png'> X " + krown +
-                "</div><div id='gold'><img src='images/gold.png'> X " + price +
-                "</div>"+
-            "</div>" +
-            "<div id='damage'><div id='fighter-total'>" + fighter +
-                "</div><div id='rogue-total'>" + rogue +
-                "</div><div id='caster-total'>" + caster +
-                "</div><div id='totalDamage'>Damage : " + total + "</div>" +
-            "</div>");
+                    "<div id='metrics'>" +
+                    "<div id='krowns'><img src='images/krowns.png'> X " + krown +
+                    "</div><div id='gold'><img id='cost' title='The Average cost of your Klash deduced from the break chances.' src='images/gold.png'> " + price +
+                    "</div>" +
+                    "</div>" +
+                    "<div id='damage'><div id='fighter-total'>" + fighter +
+                    "</div><div id='rogue-total'>" + rogue +
+                    "</div><div id='caster-total'>" + caster +
+                    "</div><div id='totalDamage'>Damage : " + total + "</div>" +
+                    "</div>");
 }
-function breakChance(level, itemLevel){
-    var breaks = [0.1,0.25,0.5,0.9];
+function breakChance(level, itemLevel) {
+    if (!itemLevel)
+        return 0;
+    var breaks = [0.1, 0.25, 0.5, 0.9];
     var i = 0;
-    if (itemLevel - level < 0){
+    if (itemLevel - level < 0) {
         i = 0;
-    }else if(itemLevel - level > 3){
+    } else if (itemLevel - level > 3) {
         i = 3;
-    }else{
+    } else {
         i = itemLevel - level;
     }
     return breaks[i];
@@ -463,7 +503,7 @@ function drawSlider(min, max, v) {
 }
 
 initInterface();
-totalDamage()
+totalDamage();
 var char = main.append("g").attr("id", "mainImage");
 d3.json("json/data.json", function (data) {
     levels = data.game.levels;
@@ -555,4 +595,30 @@ d3.json("json/data.json", function (data) {
                 newChar(d);
                 drawSlider(d.min, d.max, (d.min + d.max) / 2);
             });
+    if (window.location.search.slice(3)) {
+        //var weaponsById = d3.map(), protectionsById = d3.map(), supportivesById = d3.map(), customerById = d3.map();
+        var att = [], def = [], ext = [];
+        for (var key in data.game.items.weapons) {
+            att = att.concat(data.game.items.weapons[key]);
+        }
+        for (var key in data.game.items.protections) {
+            def = def.concat(data.game.items.protections[key]);
+        }
+        for (var key in data.game.items.supportive) {
+            ext = ext.concat(data.game.items.supportive[key]);
+        }
+        for (var i = 0; i < data.game.chars.length; i++) {
+            customerById.set(data.game.chars[i].i, data.game.chars[i]);
+        }
+        for (var i = 0; i < att.length; i++) {
+            weaponsById.set(att[i].i, att[i]);
+        }
+        for (var i = 0; i < def.length; i++) {
+            protectionsById.set(def[i].i, def[i]);
+        }
+        for (var i = 0; i < ext.length; i++) {
+            supportivesById.set(ext[i].i, ext[i]);
+        }
+        loadBuild(window.location.search.slice(3));
+    }
 });
