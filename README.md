@@ -4,6 +4,8 @@ PVP Calculator
 Web Client side application calculating the pvp damage of the game [__Swords &
 Potions 2__](http://www.edgebee.com/games?id=5) by [__Edgebee__](http://www.edgebee.com) .
 
+Please check this [**Deployed Instance**](http://pvpcalculator.com) for a **live Demo**.
+
 Contributors
 ============
 
