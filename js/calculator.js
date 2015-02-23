@@ -2,6 +2,7 @@ var width = 960, height = 600;
 
 var R = ["z", "z", "z", "z", "z", "z", "z", "z", "z", "z"];
 var current = {customer: null, attack: {Price: null}, defence: {Price: null}, extra: {Price: null}};
+var orderState = {Price: 0, Level: 0, Recipe: 0, Time: 0, Category: 0};
 
 var svg = d3.select("#calculator").append("svg")
         .attr("width", width)
@@ -64,6 +65,100 @@ function setItems(item, itemCategory, d, data) {
             map.push(data[d[itemCategory][j]][k]);
     }
     item.set(d.id, map);
+}
+function itemOrderBy(prop) {
+    if (orderState[prop] === 0 || orderState[prop] === -1)
+        orderState[prop] = 1;
+    else
+        orderState[prop] = -1;
+    if (prop !== "Recipe") {
+        weaponsByCustomer.forEach(function (d, i) {
+            i.sort(function (a, b) {
+                if (a[prop] < b[prop])
+                    return 1 * orderState[prop];
+                if (a[prop] > b[prop])
+                    return -1 * orderState[prop];
+                return 0;
+            });
+        });
+        protectionsByCustomer.forEach(function (d, i) {
+            i.sort(function (a, b) {
+                if (a[prop] < b[prop])
+                    return 1 * orderState[prop];
+                if (a[prop] > b[prop])
+                    return -1 * orderState[prop];
+                return 0;
+            });
+        });
+        supportivesByCustomer.forEach(function (d, i) {
+            i.sort(function (a, b) {
+                if (a[prop] < b[prop])
+                    return 1 * orderState[prop];
+                if (a[prop] > b[prop])
+                    return -1 * orderState[prop];
+                return 0;
+            });
+        });
+    } else {
+        weaponsByCustomer.forEach(function (d, i) {
+            i.sort(function (a, b) {
+                if (a[prop].substring(a[prop].indexOf("*") + 1) < b[prop].substring(b[prop].indexOf("*") + 1))
+                    return 1 * orderState[prop];
+                if (a[prop].substring(a[prop].indexOf("*") + 1) > b[prop].substring(b[prop].indexOf("*") + 1))
+                    return -1 * orderState[prop];
+                return 0;
+            });
+        });
+        protectionsByCustomer.forEach(function (d, i) {
+            i.sort(function (a, b) {
+                if (a[prop].substring(a[prop].indexOf("*") + 1) < b[prop].substring(b[prop].indexOf("*") + 1))
+                    return 1 * orderState[prop];
+                if (a[prop].substring(a[prop].indexOf("*") + 1) > b[prop].substring(b[prop].indexOf("*") + 1))
+                    return -1 * orderState[prop];
+                return 0;
+            });
+        });
+        supportivesByCustomer.forEach(function (d, i) {
+            i.sort(function (a, b) {
+                if (a[prop].substring(a[prop].indexOf("*") + 1) < b[prop].substring(b[prop].indexOf("*") + 1))
+                    return 1 * orderState[prop];
+                if (a[prop].substring(a[prop].indexOf("*") + 1) > b[prop].substring(b[prop].indexOf("*") + 1))
+                    return -1 * orderState[prop];
+                return 0;
+            });
+        });
+    }
+    if (current.customer) {//newChar(current.customer);
+        d3.select("#calculator").selectAll("li").remove();
+        reloadItems(current.customer.id, weapons, weaponsByCustomer, attack, "attack", 60);
+        reloadItems(current.customer.id, protections, protectionsByCustomer, defence, "defence", 200);
+        reloadItems(current.customer.id, supportives, supportivesByCustomer, extra, "extra", 340);
+    }
+    d3.select("#time").html(function () {
+        return orderState.Time === 1 ? "Crafting Time &#x25B2;" : orderState.Time === -1 ? "Crafting Time &#x25BC;" : "Crafting Time";
+    }).classed("buttonLast", function(){
+        return (prop === "Time");
+    });
+    d3.select("#category").html(function () {
+        return orderState.Category === 1 ? "Category &#x25B2;" : orderState.Category === -1 ? "Category &#x25BC;" : "Category";
+    }).classed("buttonLast", function(){
+        return (prop === "Category");
+    });
+    d3.select("#price").html(function () {
+        return orderState.Price === 1 ? "Price &#x25B2;" : orderState.Price === -1 ? "Price &#x25BC;" : "Price";
+    }).classed("buttonLast", function(){
+        return (prop === "Price");
+    });
+    d3.select("#level").html(function () {
+        return orderState.Level === 1 ? "Level &#x25B2;" : orderState.Level === -1 ? "Level &#x25BC;" : "Level";
+    }).classed("buttonLast", function(){
+        return (prop === "Level");
+    });
+    d3.select("#recipe").html(function () {
+        return orderState.Recipe === 1 ? "Recipe &#x25B2;" : orderState.Recipe === -1 ? "Recipe &#x25BC;" : "Recipe";
+    }).classed("buttonLast", function(){
+        return (prop === "Recipe");
+    });
 }
 function duration(time) {
     if (time === 1) {
