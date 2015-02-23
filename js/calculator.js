@@ -136,29 +136,54 @@ function itemOrderBy(prop) {
     }
     d3.select("#time").html(function () {
         return orderState.Time === 1 ? "Crafting Time &#x25B2;" : orderState.Time === -1 ? "Crafting Time &#x25BC;" : "Crafting Time";
-    }).classed("buttonLast", function(){
+    }).classed("buttonLast", function () {
         return (prop === "Time");
     });
     d3.select("#category").html(function () {
         return orderState.Category === 1 ? "Category &#x25B2;" : orderState.Category === -1 ? "Category &#x25BC;" : "Category";
-    }).classed("buttonLast", function(){
+    }).classed("buttonLast", function () {
         return (prop === "Category");
     });
     d3.select("#price").html(function () {
         return orderState.Price === 1 ? "Price &#x25B2;" : orderState.Price === -1 ? "Price &#x25BC;" : "Price";
-    }).classed("buttonLast", function(){
+    }).classed("buttonLast", function () {
         return (prop === "Price");
     });
     d3.select("#level").html(function () {
         return orderState.Level === 1 ? "Level &#x25B2;" : orderState.Level === -1 ? "Level &#x25BC;" : "Level";
-    }).classed("buttonLast", function(){
+    }).classed("buttonLast", function () {
         return (prop === "Level");
     });
     d3.select("#recipe").html(function () {
         return orderState.Recipe === 1 ? "Recipe &#x25B2;" : orderState.Recipe === -1 ? "Recipe &#x25BC;" : "Recipe";
-    }).classed("buttonLast", function(){
+    }).classed("buttonLast", function () {
         return (prop === "Recipe");
     });
+}
+function suggest(level, customerId) {
+    var att = new Array(), def = new Array(), ext = new Array();
+    var choosenAtt = {Price:0}, choosenDef = {Price:0}, choosenExt = {Price:0};
+    weaponsByCustomer.get(customerId).forEach(function (d) {
+        if(d.Level <= level) att.push(d);
+    });
+    protectionsByCustomer.get(customerId).forEach(function (d) {
+        if(d.Level <= level) def.push(d);
+    });
+    supportivesByCustomer.get(customerId).forEach(function (d) {
+        if(d.Level <= level) ext.push(d);
+    });
+    att.forEach(function(d){
+        if(d.Price > choosenAtt.Price) choosenAtt = d;
+    });
+    def.forEach(function(d){
+        if(d.Price > choosenDef.Price) choosenDef = d;
+    });
+    ext.forEach(function(d){
+        if(d.Price > choosenExt.Price) choosenExt = d;
+    });
+    addItem(choosenAtt, attack, "attack", 60);
+    addItem(choosenDef, defence, "defence", 200);
+    addItem(choosenExt, extra, "extra", 340);
 }
 function duration(time) {
     if (time === 1) {
@@ -335,6 +360,7 @@ function drawPVP() {
     });
 }
 function newChar(d) {
+    d3.select("#suggest").classed("hidden", false);
     d3.select("#calculator").selectAll("li").remove();
     reloadItems(d.id, weapons, weaponsByCustomer, attack, "attack", 60);
     reloadItems(d.id, protections, protectionsByCustomer, defence, "defence", 200);
@@ -345,9 +371,11 @@ function newChar(d) {
     drawPVP();
 }
 function editChar(position) {
+    d3.select("#suggest").classed("hidden", false);
     d3.select("#calculator").selectAll("li").remove();
     current = R[position];
     R[position] = "z";
+    writePermaLink();
     reloadItems(current.customer.id, weapons, weaponsByCustomer, attack, "attack", 60);
     reloadItems(current.customer.id, protections, protectionsByCustomer, defence, "defence", 200);
     reloadItems(current.customer.id, supportives, supportivesByCustomer, extra, "extra", 340);
@@ -368,6 +396,8 @@ function editChar(position) {
     totalDamage();
 }
 function send(position, current) {
+    writePermaLink();
+    d3.select("#suggest").classed("hidden", true);
     results[position].sent(position, 10, 10, 48, 48, "chars/icon/" + current.customer.icon);
     if (current.attack.image) {
         results[position].sent(position, 70, 6, 16, 16, "items/icon/" + current.attack.image);
@@ -399,6 +429,7 @@ function send(position, current) {
         results[position].selectAll("image").remove();
         results[position].selectAll("text").remove();
         totalDamage();
+        writePermaLink();
     });
     totalDamage();
 }
@@ -581,7 +612,7 @@ function drawSlider(min, max, v) {
             .call(brush.event);
     function brushed() {
         var value = brush.extent()[0];
-        if (d3.event.sourceEvent) { // not a programmatic event
+        if (d3.event.sourceEvent) {
             value = x.invert(d3.mouse(this)[0]);
             brush.extent([value, value]);
         }
